@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: landverse3d
+      POSTGRES_USER: landverse
+      POSTGRES_PASSWORD: landverse123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://landverse:landverse123@db:5432/landverse3d
+      UPLOAD_DIRECTORY: /app/uploads
+      SECRET_KEY: landverse-secret-key-2024
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  uploads:

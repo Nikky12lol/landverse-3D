@@ -66,7 +66,22 @@ uploads/  user uploads + annotated overlays
 | Infra | `GET/POST /infrastructure/`, `POST /infrastructure/check-conflict` |
 | Stats | `GET /stats/dashboard` |
 
-## Deploy (Render backend + Vercel frontend, free tiers)
+## Deploy with Docker (recommended — free, runs anywhere)
+
+Prerequisites: Docker Desktop (on Windows it needs WSL2 — run `wsl --install`, reboot, then install Docker Desktop).
+
+```bash
+docker compose up --build
+```
+
+That's it:
+- UI → http://localhost:5173
+- API → http://localhost:8000 (docs at `/docs`, health at `/health`)
+- Postgres → localhost:5432 (user `landverse`, db `landverse3d`)
+
+Tables + seed data auto-create on first API start. Data persists in the `pgdata` / `uploads` volumes. Rebuild after code changes with `docker compose up --build`; stop with `docker compose down` (add `-v` to wipe demo data).
+
+## Deploy to cloud (alternative)
 
 **Backend + Postgres on Render** — via `render.yaml` blueprint:
 1. Render dashboard → New → Blueprint → select `Akshithsan11/landverse-3D`

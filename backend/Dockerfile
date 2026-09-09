@@ -12,5 +12,5 @@ RUN mkdir -p /app/uploads
 
 EXPOSE 8000
 
-# Shell form so $PORT (set by Render) expands. Service root is backend/, hence app.main:app.
-CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# Shell form so $PORT expands on hosts that set it (Render); defaults to 8000 (compose/local).
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
