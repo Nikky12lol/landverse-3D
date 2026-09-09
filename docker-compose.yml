@@ -9,6 +9,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    restart: unless-stopped
 
   api:
     build: ./backend
@@ -35,6 +36,7 @@ services:
       - "5173:80"
     depends_on:
       - api
+    restart: unless-stopped
 
 volumes:
   pgdata:
