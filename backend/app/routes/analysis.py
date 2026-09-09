@@ -10,8 +10,11 @@ from ..services.ai_detector import analyze_image
 
 router = APIRouter(prefix="/analysis", tags=["AI Analysis"])
 
-UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "uploads")
-UPLOAD_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "uploads"))
+# Same directory main.py serves via /uploads; UPLOAD_DIRECTORY env wins in Docker.
+UPLOAD_DIR = os.path.abspath(
+    os.getenv("UPLOAD_DIRECTORY")
+    or os.path.join(os.path.dirname(__file__), "..", "..", "..", "uploads")
+)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 ALLOWED = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp", ".bmp"}

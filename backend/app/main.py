@@ -25,7 +25,8 @@ app.add_middleware(
 )
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+# UPLOAD_DIRECTORY env override lets Docker/Render point uploads at /app/uploads.
+UPLOAD_DIR = os.path.abspath(os.getenv("UPLOAD_DIRECTORY", os.path.join(BASE_DIR, "uploads")))
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 

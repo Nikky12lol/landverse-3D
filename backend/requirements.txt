@@ -7,3 +7,4 @@ numpy>=1.24
 opencv-python-headless>=4.8
 python-dotenv>=1.0
 pillow>=10.0
+psycopg2-binary>=2.9  # PostgreSQL driver (Render/production); SQLite needs nothing

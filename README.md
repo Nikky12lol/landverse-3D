@@ -66,6 +66,21 @@ uploads/  user uploads + annotated overlays
 | Infra | `GET/POST /infrastructure/`, `POST /infrastructure/check-conflict` |
 | Stats | `GET /stats/dashboard` |
 
+## Deploy (Render backend + Vercel frontend, free tiers)
+
+**Backend + Postgres on Render** — via `render.yaml` blueprint:
+1. Render dashboard → New → Blueprint → select `Akshithsan11/landverse-3D`
+2. Render auto-provisions the `landverse-3d-api` web service (Docker, `backend/Dockerfile`) + `landverse-db` Postgres, wiring `DATABASE_URL` for you
+3. Wait for deploy, then check `https://<your-api>.onrender.com/health`
+4. Tables + seed data are created automatically on startup
+
+**Frontend on Vercel:**
+1. Vercel → Add New → Project → import `Akshithsan11/landverse-3D`, set **Root Directory** to `frontend/`
+2. Add env var `VITE_API_URL=https://<your-api>.onrender.com` (no trailing slash)
+3. Deploy — `frontend/vercel.json` handles SPA rewrites for react-router
+
+> Render free API sleeps after 15 min idle (~50s cold start): open `/health` a minute before demos. Uploads live on ephemeral disk and reset on redeploy.
+
 ## Postgres (optional)
 
 Set `DATABASE_URL=postgresql://landverse:landverse123@localhost:5432/landverse3d` in `backend/.env`,
