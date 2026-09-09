@@ -2,6 +2,10 @@
 
 Full-stack app: **FastAPI backend** (SQLite out-of-the-box, Postgres-ready) + **React + Three.js frontend** with dynamic procedural 3D city, real OpenCV AI detection, ULPIN registry, validation engine and underground infrastructure view.
 
+## 🌍 Live demo
+
+**https://boil-earshot-wilt.ngrok-free.dev** — the Docker stack below, served publicly via tunnel. (Needs this PC + Docker running; if offline, launch it yourself with `docker compose up --build` + `start-public.bat`.)
+
 ## Run it (Windows)
 
 ```bat
