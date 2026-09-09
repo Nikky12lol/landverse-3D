@@ -1,0 +1,88 @@
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                     │
+│   🌐  L A N D V E R S E   3 D                                      │
+│   AI-Powered 3D Property Intelligence Platform                      │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   WHAT IT DOES                                                      │
+│   ─────────────                                                     │
+│   Upload a satellite/drone photo → AI detects the building →        │
+│   Generates a ULPIN property ID → Validates the record →            │
+│   Renders everything in an interactive 3D city you can explore.     │
+│                                                                     │
+│   India's 800M+ land parcels have no unified 3D identity.           │
+│   LANDVERSE 3D fixes that — from rooftop to underground.            │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   6 CORE FEATURES                                                   │
+│   ───────────────                                                   │
+│                                                                     │
+│   1. 🤖 AI Building Detection     Real OpenCV pipeline — Canny      │
+│      edges → contour → footprint polygon → height/type/classify.    │
+│                                                                     │
+│   2. 🔢 ULPIN Registry            Generate IND-STATE-CITY-PARCEL-   │
+│      Bxx-Fxx-Uxx IDs with validation and duplicate detection.       │
+│                                                                     │
+│   3. ✅ Rule Validation           6 independent checks → 0-100     │
+│      score: height/floor ratio, AI confidence, sanity ranges.       │
+│                                                                     │
+│   4. 🌐 Dynamic 3D City           Procedural buildings from real    │
+│      footprints. Click → Parcel→Building→Floor→Unit drill-down.     │
+│                                                                     │
+│   5. 🔭 Underground View          Water, sewer, power, metro,       │
+│      fiber pipes rendered at real depths below the city.            │
+│                                                                     │
+│   6. ⚠️ Conflict Detection        Foundation depth check against    │
+│      underground assets — high/medium severity flags.               │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   TECH STACK                                                        │
+│   ──────────                                                        │
+│                                                                     │
+│   Backend:   FastAPI + SQLAlchemy + OpenCV + Pydantic               │
+│   Frontend:  React + TypeScript + Tailwind CSS + React Three Fiber  │
+│   3D Engine: Three.js (OrbitControls, ExtrudeGeometry, Drei)        │
+│   Database:  SQLite (default) / PostgreSQL (production-ready)       │
+│   API:       14 REST endpoints with auto-generated Swagger docs     │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   WHY WE WIN                                                        │
+│   ──────────                                                        │
+│                                                                     │
+│   ✓ First open-source 3D ULPIN tool in India                        │
+│   ✓ Real AI (OpenCV) — not mock data, not a prototype              │
+│   ✓ Full-stack in one repo — 15 min from clone to running           │
+│   ✓ Underground awareness — no other property tool does this        │
+│   ✓ Vertical hierarchy — Parcel → Building → Floor → Unit           │
+│   ✓ Government-aligned — built for India's ULPIN mandate            │
+│   ✓ Zero cost — SQLite default, no paid services needed             │
+│   ✓ Developer-ready — full REST API with Swagger docs              │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   BY THE NUMBERS                                                    │
+│   ──────────────                                                    │
+│                                                                     │
+│   14 API endpoints  ·  8 buildings seeded  ·  6 validation rules   │
+│   5 infra types     ·  92.4% avg AI confidence  ·  100% open source │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   FUTURE SCOPE                                                      │
+│   ────────────                                                      │
+│   • Real satellite tile integration (Mapbox / Google)               │
+│   • Multi-city geo-clustering                                       │
+│   • PDF validation reports for government filings                   │
+│   • Mobile app (React Native) using same API                        │
+│   • Integration with India's DILRMP land records system             │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   BUILT BY: Sankathala Akshith                                      │
+│   REPO:     github.com/Akshithsan11/landverse-3D                    │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘

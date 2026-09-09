@@ -1,0 +1,184 @@
+LANDVERSE 3D — Live Demo Script (10 min)
+==========================================
+
+PREREQUISITES:
+  Terminal 1: start-backend.bat   (API on :8000)
+  Terminal 2: start-frontend.bat  (UI on :5173)
+  Browser:    http://localhost:5173
+
+
+STEP 1 — Landing Page (30 sec)
+-------------------------------
+URL: http://localhost:5173/
+
+Say: "This is LANDVERSE 3D — an AI-powered 3D property intelligence platform.
+It detects buildings from satellite imagery, assigns India's ULPIN property IDs,
+validates records, and renders everything in an interactive 3D city."
+
+Show: 6 feature cards, tech stack badges, quick start block.
+Point: "Backend, Frontend, 3D — all in one repo."
+
+
+STEP 2 — Dashboard (45 sec)
+-------------------------------
+URL: http://localhost:5173/dashboard
+
+Say: "The dashboard streams live stats from the database."
+
+Highlight:
+  - 5 Parcels, 8 Buildings, 1 ULPIN, 5 Infra assets
+  - 92.4% average AI confidence — very high
+  - 35m average building height, 11,800 sq.m tracked
+  - Bar chart: building types (Residential High/Mid/Low, Commercial, Mixed)
+  - Pie chart: 100% buildings pass validation
+  - Recent jobs panel (empty until you run AI analysis)
+
+
+STEP 3 — 3D City Map (2 min) ★ HERO MOMENT
+-------------------------------
+URL: http://localhost:5173/map
+
+Say: "This is the core — an interactive 3D city rendered from database records."
+
+Actions:
+  1. Drag to orbit the city — "You can rotate around the entire city"
+  2. Scroll to zoom — "Fly in close to any building"
+  3. Hover a building — "See the code, height, floors, type, AI confidence"
+  4. Click BLD-2041 — Drill-down panel opens on the right
+     - Parcel: PRC-01928, Hyderabad, 2500.5 sq.m
+     - Building: BLD-2041, 42.6m, 12 floors, Residential High Rise
+     - Floor 4 expanded → 4 units: 401 (Owned), 402 (Owned), 403 (Rented), 404 (Owned)
+     - "Full Parcel → Building → Floor → Unit hierarchy"
+  5. Type "Tower" in the filter — "Only Commercial Towers shown"
+  6. Explain: "Each tower is procedurally generated from real height, floors, and footprint polygon"
+
+Say: "No other tool in India gives you this Parcel-to-Unit 3D drill-down."
+
+
+STEP 4 — Explode + Underground (1 min)
+-------------------------------
+Same page: http://localhost:5173/map
+
+Actions:
+  1. Drag the Explode slider → floor slabs separate vertically
+     - "You can see individual floor plates separating"
+  2. Click Underground toggle → pipes appear below the city
+     - Blue = Water Pipeline (8.4m)
+     - Yellow = Electric Cable (5.0m)
+     - Grey = Sewer (10.2m)
+     - Pink = Metro Tunnel (25.0m)
+     - Green = Fiber Cable (3.5m)
+  3. "The soil slice shows where the ground ends and infrastructure begins"
+
+Say: "We don't stop at the surface — underground awareness is critical for construction."
+
+
+STEP 5 — AI Analysis (2 min) ★ WOW MOMENT
+-------------------------------
+URL: http://localhost:5173/analysis
+
+Say: "This is where AI meets property intelligence."
+
+Actions:
+  1. Click the upload area → choose any building photo (JPG/PNG)
+     - "Upload a drone or satellite image — any building photo works"
+  2. Click Upload → file uploaded, size shown
+  3. Select a parcel from dropdown (or leave empty)
+  4. Check "auto-create building"
+  5. Click "Run AI analysis"
+  6. Result appears:
+     - Building type, confidence (e.g. 98.5%), height, floors
+     - Annotated overlay image (green detection boundary drawn on the photo)
+     - Footprint polygon (normalized 0-1 coordinates)
+     - "Created building BLD-2101" — now visible in 3D Map
+
+Say: "Real OpenCV — no mock data. Canny edge detection, contour finding,
+polygon extraction. The footprint is actual geometry you can use in 3D."
+
+Optional: Go back to /map → show the newly created building in 3D.
+
+
+STEP 6 — ULPIN (1 min)
+-------------------------------
+URL: http://localhost:5173/ulpin
+
+Actions:
+  1. Show the form: IND / TG / HYD / 01928 / Building 1 / Floor 4 / Unit 1
+  2. Point to the live preview: "IND-TG-HYD-01928-B01-F04-U01"
+  3. Click "Generate & register" → ULPIN registered with green confirmation
+  4. In the Validate panel, paste: IND-TG-HYD-01928-B01-F04-U01
+  5. Click Check → "Valid ULPIN" with all 7 parts parsed
+  6. Show the registry list: 2 ULPINs now registered
+
+Say: "India's ULPIN system needs tools like this. We generate, validate, and
+store ULPINs — all interactive, all in 3D context."
+
+
+STEP 7 — Validation (1 min)
+-------------------------------
+URL: http://localhost:5173/validation
+
+Actions:
+  1. Select BLD-2043 (Commercial Tower, 70m, 20 floors)
+  2. Click "Run validation"
+  3. Result: Score 100, Status VALID
+  4. Show checks: height_per_floor = 3.50 ✓, confidence = 96.8% ✓
+  5. "Zero warnings — this building passes all 6 rule checks"
+  6. Show history: 2 validation records now stored
+
+Say: "Our 6-rule engine catches inconsistencies that manual surveys miss.
+Height-to-floor ratio, AI confidence bands, realistic ranges."
+
+
+STEP 8 — Infrastructure + Conflict (1 min)
+-------------------------------
+URL: http://localhost:5173/infrastructure
+
+Actions:
+  1. Show the 3D underground view again (pipes visible)
+  2. Show the 5 registered assets with types, depths, owners
+  3. In the Conflict Check panel:
+     - Foundation depth: 8m, Tolerance: 3m
+  4. Click "Check conflicts"
+  5. Result: 3 conflicts found
+     - Water Pipeline at 8.4m → gap 0.4m → HIGH severity
+     - Electric Cable at 5.0m → gap 3.0m → MEDIUM severity
+     - Sewer at 10.2m → gap 2.2m → MEDIUM severity
+
+Say: "Before you dig, check what's below. This saves lives and millions in
+damage. No other property tool does this."
+
+
+STEP 9 — API Docs (30 sec)
+-------------------------------
+URL: http://localhost:8000/docs
+
+Say: "Every feature we just showed is a documented REST API endpoint.
+Developers can build mobile apps, dashboards, or integrate with government
+systems. 14 endpoints, auto-generated docs."
+
+Show: Swagger UI with all routes grouped (Parcels, Buildings, ULPIN, etc.)
+
+
+STEP 10 — Closing (30 sec)
+-------------------------------
+Return to http://localhost:5173/
+
+Say: "LANDVERSE 3D is India's first open-source 3D ULPIN platform.
+Real AI detection, interactive 3D city, underground awareness, full validation.
+Built with FastAPI, React Three Fiber, OpenCV, SQLAlchemy.
+Zero config — SQLite by default, Postgres ready.
+100% open source. Thank you."
+
+If asked about scalability:
+  - Swap DATABASE_URL to Postgres for production
+  - Add authentication via FastAPI OAuth2
+  - Deploy to AWS/GCP with Docker Compose
+  - Extend AI pipeline with YOLO or satellite-specific models
+
+If asked about future scope:
+  - Real satellite tile integration (Mapbox/Google)
+  - Multi-city support with geo clustering
+  - PDF report generation for validation
+  - Mobile app (React Native) using same API
+  - Integration with India's DILRMP land records system

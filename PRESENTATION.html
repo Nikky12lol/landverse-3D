@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LANDVERSE 3D — Hackathon Presentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cyber: #00ffff;
+    --cyber-dim: #00cccc;
+    --bg-dark: #0a0a0f;
+    --bg-panel: #12121f;
+    --bg-card: #1a1a2e;
+    --accent-pink: #f0abfc;
+    --accent-green: #6ee7b7;
+    --accent-yellow: #facc15;
+    --accent-red: #fb7185;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+  }
+
+  html, body { height: 100%; overflow: hidden; background: var(--bg-dark); color: var(--text); font-family: 'Inter', sans-serif; }
+
+  /* Slide container */
+  .deck { height: 100vh; width: 100vw; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 5vh 8vw;
+    background: var(--bg-dark);
+    overflow-y: auto;
+  }
+  .slide.active { display: flex; }
+
+  /* Navigation */
+  .nav {
+    position: fixed; bottom: 20px; right: 24px; z-index: 100;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .nav button {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: rgba(0,255,255,0.12); border: 1px solid rgba(0,255,255,0.3);
+    color: var(--cyber); font-size: 18px; cursor: pointer;
+    display: grid; place-items: center; transition: all 0.2s;
+  }
+  .nav button:hover { background: rgba(0,255,255,0.25); }
+  .nav .counter { font-size: 13px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 100;
+    background: linear-gradient(90deg, var(--cyber), var(--accent-pink));
+    transition: width 0.35s ease;
+  }
+
+  /* Typography */
+  h1 { font-size: clamp(2rem, 5vw, 3.8rem); font-weight: 900; line-height: 1.08; letter-spacing: -0.03em; }
+  h2 { font-size: clamp(1.5rem, 3.5vw, 2.6rem); font-weight: 800; line-height: 1.15; }
+  h3 { font-size: 1.1rem; font-weight: 700; }
+  p, li { font-size: clamp(0.85rem, 1.5vw, 1.05rem); line-height: 1.65; color: var(--text-dim); }
+  b { color: var(--text); font-weight: 600; }
+
+  .neon { color: var(--cyber); text-shadow: 0 0 24px rgba(0,255,255,0.5); }
+  .pink { color: var(--accent-pink); }
+  .green { color: var(--accent-green); }
+  .yellow { color: var(--accent-yellow); }
+  .red { color: var(--accent-red); }
+
+  .tag {
+    display: inline-block; padding: 4px 14px; border-radius: 999px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; border: 1px solid rgba(0,255,255,0.3);
+    background: rgba(0,255,255,0.08); color: var(--cyber); margin-bottom: 12px;
+  }
+
+  .slide-subtitle { font-size: 0.85rem; color: var(--text-dim); margin-top: 8px; max-width: 700px; text-align: center; }
+
+  /* Cards grid */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 1100px; margin-top: 24px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; max-width: 1100px; margin-top: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: 100%; max-width: 1100px; margin-top: 24px; }
+
+  .card {
+    background: var(--bg-card); border: 1px solid rgba(0,255,255,0.12);
+    border-radius: 16px; padding: 20px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(0,255,255,0.4); transform: translateY(-2px); }
+
+  .card-icon {
+    width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+    background: rgba(0,255,255,0.1); border: 1px solid rgba(0,255,255,0.2);
+    font-size: 20px; margin-bottom: 12px;
+  }
+
+  /* Stat box */
+  .stat-box {
+    background: var(--bg-card); border: 1px solid rgba(0,255,255,0.12);
+    border-radius: 16px; padding: 18px; text-align: center;
+  }
+  .stat-box .num { font-size: 2.4rem; font-weight: 900; color: var(--cyber); text-shadow: 0 0 20px rgba(0,255,255,0.3); }
+  .stat-box .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-top: 4px; }
+
+  /* Architecture diagram */
+  .arch { width: 100%; max-width: 1000px; margin-top: 20px; }
+  .arch-box {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 10px; font-size: 0.78rem; font-weight: 600;
+    border: 1px solid rgba(0,255,255,0.25); background: var(--bg-card);
+  }
+  .arch-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
+  .arch-arrow { color: var(--cyber); font-size: 1.2rem; }
+  .arch-label { font-size: 0.65rem; color: var(--text-dim); text-align: center; margin-top: 2px; }
+
+  /* Workflow */
+  .flow { display: flex; align-items: center; gap: 0; width: 100%; max-width: 1100px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
+  .flow-step {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 18px; border-radius: 14px; background: var(--bg-card);
+    border: 1px solid rgba(0,255,255,0.15); min-width: 110px; text-align: center;
+  }
+  .flow-step .icon { font-size: 24px; }
+  .flow-step .step-label { font-size: 0.72rem; font-weight: 700; color: var(--text); }
+  .flow-step .step-desc { font-size: 0.62rem; color: var(--text-dim); }
+  .flow-arrow { font-size: 1.4rem; color: var(--cyber); margin: 0 4px; }
+
+  /* Comparison table */
+  .compare { width: 100%; max-width: 1000px; margin-top: 20px; border-collapse: separate; border-spacing: 0; }
+  .compare th, .compare td {
+    padding: 10px 16px; text-align: left; font-size: 0.8rem;
+    border-bottom: 1px solid rgba(0,255,255,0.08);
+  }
+  .compare th { color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.68rem; }
+  .compare td:first-child { font-weight: 600; color: var(--text); }
+  .compare .yes { color: var(--accent-green); font-weight: 700; }
+  .compare .no { color: var(--text-dim); }
+  .compare .us { background: rgba(0,255,255,0.05); }
+  .compare thead th.us { color: var(--cyber); }
+
+  /* API response mockup */
+  .api-box {
+    background: #0b0f1a; border: 1px solid rgba(0,255,255,0.15);
+    border-radius: 12px; padding: 16px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--accent-green); max-height: 200px; overflow-y: auto;
+    width: 100%; white-space: pre-wrap; line-height: 1.6;
+  }
+
+  /* Title big */
+  .big-title { text-align: center; }
+  .big-title h1 { margin-bottom: 12px; }
+  .big-title .byline { font-size: 0.95rem; color: var(--text-dim); }
+  .big-title .byline b { color: var(--cyber); }
+
+  .logo-big {
+    width: 80px; height: 80px; border-radius: 20px; display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(0,255,255,0.2), rgba(240,171,252,0.15));
+    border: 2px solid rgba(0,255,255,0.35); font-size: 36px; margin-bottom: 20px;
+  }
+
+  /* Highlight pill */
+  .pill {
+    display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700;
+  }
+  .pill-cyber { background: rgba(0,255,255,0.15); color: var(--cyber); }
+  .pill-green { background: rgba(110,231,183,0.15); color: var(--accent-green); }
+  .pill-pink  { background: rgba(240,171,252,0.15); color: var(--accent-pink); }
+  .pill-yellow { background: rgba(250,204,21,0.15); color: var(--accent-yellow); }
+
+  .center-col { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
+
+  /* Speaker notes toggle */
+  .notes-toggle {
+    position: fixed; bottom: 20px; left: 24px; z-index: 100;
+    font-size: 11px; color: var(--text-dim); background: rgba(0,0,0,0.5);
+    padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+  }
+  .notes-panel {
+    position: fixed; bottom: 60px; left: 24px; z-index: 100; width: 420px;
+    background: rgba(10,10,15,0.95); border: 1px solid rgba(0,255,255,0.2);
+    border-radius: 12px; padding: 16px; font-size: 0.78rem; color: var(--text-dim);
+    display: none; line-height: 1.7; max-height: 40vh; overflow-y: auto;
+  }
+  .notes-panel.show { display: block; }
+  .notes-panel b { color: var(--cyber); }
+
+  /* Winner badge */
+  .winner-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 20px; border-radius: 999px; font-weight: 800; font-size: 0.9rem;
+    background: linear-gradient(135deg, rgba(250,204,21,0.2), rgba(251,113,133,0.15));
+    border: 1px solid rgba(250,204,21,0.4); color: var(--accent-yellow);
+  }
+
+  @media (max-width: 800px) {
+    .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    .flow { gap: 4px; }
+    .flow-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+<div class="progress" id="progress"></div>
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<div class="slide active" data-notes="Welcome everyone. I'm Akshith, and today I'll show you LANDVERSE 3D — an AI-powered 3D property intelligence platform that can detect buildings from satellite imagery, assign unique property IDs, validate records, and visualize an entire city in 3D — all in real time.">
+  <div class="big-title">
+    <div class="logo-big">🌐</div>
+    <h1>LANDVERSE <span class="neon">3D</span></h1>
+    <p style="font-size:1.1rem; color: var(--text); margin-top: 8px; font-weight: 600;">AI-Powered 3D Property Intelligence Platform</p>
+    <p class="byline" style="margin-top:14px;">
+      <b>Unique Land Parcel Identification + Vertical Property Mapping</b><br>
+      Detect buildings with AI · Assign ULPINs · Validate records · Explore in 3D
+    </p>
+    <div style="margin-top: 24px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+      <span class="pill pill-cyber">FastAPI Backend</span>
+      <span class="pill pill-pink">React Three Fiber</span>
+      <span class="pill pill-green">OpenCV AI</span>
+      <span class="pill pill-yellow">SQLite + Postgres</span>
+    </div>
+    <p style="margin-top: 30px; font-size: 0.8rem; color: var(--text-dim);">Sankathala Akshith · 2026</p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: THE PROBLEM ==================== -->
+<div class="slide" data-notes="India's property sector has a massive problem. There are 800+ million land parcels and no unified way to identify them vertically — from the ground floor up to the rooftop and down to underground pipes. Current systems are 2D-only, disconnected, and paper-based.">
+  <div class="center-col">
+    <span class="tag">The Problem</span>
+    <h2>India's <span class="red">800M+</span> parcels have no<br>unified <span class="yellow">3D identity</span></h2>
+    <div class="grid-3" style="margin-top: 28px;">
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h3>Paper-based records</h3>
+        <p>Manual surveys, decades-old paper maps. No digital twin. No real-time view.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📐</div>
+        <h3>2D-only systems</h3>
+        <p>Flat maps miss verticality — floors, units, underground pipes. Buildings are opaque boxes.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">❌</div>
+        <h3>No unified ID</h3>
+        <p>India launched ULPIN but has no interactive tool to generate, validate, or visualize it.</p>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top: 12px;">
+      <div class="stat-box">
+        <div class="num">800M+</div>
+        <div class="label">Land parcels in India</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">2D</div>
+        <div class="label">Maps only — no vertical view</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">0</div>
+        <div class="label">Open-source 3D ULPIN tools</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: OUR SOLUTION ==================== -->
+<div class="slide" data-notes="LANDVERSE 3D solves this with a full-stack 3D city twin. Upload satellite/drone imagery → AI detects buildings → generates ULPIN → validates the record → and renders everything in an interactive 3D city you can click through, floor by floor.">
+  <div class="center-col">
+    <span class="tag">Our Solution</span>
+    <h2>From <span class="neon">satellite photo</span> to <span class="pink">3D city twin</span><br>in three clicks</h2>
+    <p class="slide-subtitle">Upload an image. AI detects the building. Explore it in 3D — every floor, every unit, every underground pipe.</p>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="icon">🛰️</div>
+        <div class="step-label">Upload Image</div>
+        <div class="step-desc">Drone / satellite</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">🤖</div>
+        <div class="step-label">AI Detection</div>
+        <div class="step-desc">OpenCV pipeline</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">🏛️</div>
+        <div class="step-label">3D Model</div>
+        <div class="step-desc">Footprint extrude</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">🔢</div>
+        <div class="step-label">ULPIN ID</div>
+        <div class="step-desc">Auto-generated</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">✅</div>
+        <div class="step-label">Validation</div>
+        <div class="step-desc">Rule engine</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">🔭</div>
+        <div class="step-label">3D Explore</div>
+        <div class="step-desc">Floors + pipes</div>
+      </div>
+    </div>
+    <div class="grid-4" style="margin-top: 18px;">
+      <div class="stat-box">
+        <div class="num">6</div>
+        <div class="label">Steps automated</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">3</div>
+        <div class="label">Clicks to explore</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">14</div>
+        <div class="label">API endpoints</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">100%</div>
+        <div class="label">Open source</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: LIVE DASHBOARD ==================== -->
+<div class="slide" data-notes="This is our live dashboard. It shows real-time stats from the database — 5 parcels, 8 buildings, 1 ULPIN, 5 underground infrastructure assets, 92.4% average AI confidence, 35 meters average building height. The bar chart shows the type mix — residential high rise, mid rise, commercial towers, mixed use. The pie chart shows all buildings pass validation.">
+  <div class="center-col">
+    <span class="tag">Feature #1 — Dashboard</span>
+    <h2>Real-time <span class="neon">command center</span></h2>
+    <div class="grid-4" style="margin-top: 16px;">
+      <div class="stat-box"><div class="num">5</div><div class="label">Parcels</div></div>
+      <div class="stat-box"><div class="num" style="color: var(--accent-pink);">8</div><div class="label">Buildings</div></div>
+      <div class="stat-box"><div class="num" style="color: var(--accent-green);">92.4%</div><div class="label">AI Confidence</div></div>
+      <div class="stat-box"><div class="num" style="color: var(--accent-yellow);">35m</div><div class="label">Avg Height</div></div>
+    </div>
+    <div class="grid-2" style="margin-top: 16px;">
+      <div class="card" style="min-height: 160px;">
+        <h3>Buildings by Type</h3>
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--cyber);"></div>
+            <span style="font-size: 0.78rem; flex: 1;">Residential - High Rise</span>
+            <div style="height: 8px; border-radius: 4px; background: var(--cyber); width: 22%;"></div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">2</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent-pink);"></div>
+            <span style="font-size: 0.78rem; flex: 1;">Commercial - Tower</span>
+            <div style="height: 8px; border-radius: 4px; background: var(--accent-pink); width: 22%;"></div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">2</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 3px; background: #67e8f9;"></div>
+            <span style="font-size: 0.78rem; flex: 1;">Residential - Mid Rise</span>
+            <div style="height: 8px; border-radius: 4px; background: #67e8f9; width: 22%;"></div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">2</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent-green);"></div>
+            <span style="font-size: 0.78rem; flex: 1;">Residential - Low Rise</span>
+            <div style="height: 8px; border-radius: 4px; background: var(--accent-green); width: 11%;"></div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">1</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 3px; background: var(--accent-yellow);"></div>
+            <span style="font-size: 0.78rem; flex: 1;">Mixed Use</span>
+            <div style="height: 8px; border-radius: 4px; background: var(--accent-yellow); width: 11%;"></div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">1</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="min-height: 160px;">
+        <h3>Validation Status</h3>
+        <div style="display: flex; align-items: center; justify-content: center; height: 120px; gap: 16px;">
+          <div style="width: 100px; height: 100px; border-radius: 50%; border: 12px solid var(--accent-green); display: grid; place-items: center;">
+            <span style="font-size: 1.4rem; font-weight: 900;">100%</span>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-green);">All 8 buildings VALID</div>
+            <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">Score: 85–100</div>
+            <div style="font-size: 0.72rem; color: var(--text-dim);">Height/floor ratio: 3.55 m/fl ✓</div>
+            <div style="font-size: 0.72rem; color: var(--text-dim);">AI confidence > 90% ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: AI ANALYSIS ==================== -->
+<div class="slide" data-notes="Our AI analysis pipeline uses real OpenCV — no mock data. You upload a drone or satellite image. We convert to grayscale, apply Gaussian blur, run Canny edge detection, close gaps, find contours, filter by area and rectangularity, extract the largest footprint polygon, and derive height, floors, and building type. We also produce an annotated overlay image showing the detection boundary.">
+  <div class="center-col">
+    <span class="tag">Feature #2 — AI Building Detection</span>
+    <h2>Real <span class="green">OpenCV</span> — no mock data</h2>
+    <div class="flow" style="margin-top: 16px;">
+      <div class="flow-step"><div class="icon">📷</div><div class="step-label">Upload</div><div class="step-desc">JPG/PNG/TIF</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="icon">⬛</div><div class="step-label">Grayscale</div><div class="step-desc">Color → gray</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="icon">🌫️</div><div class="step-label">Blur</div><div class="step-desc">Gaussian 5×5</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="icon">🔲</div><div class="step-label">Canny</div><div class="step-desc">Edge detect</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="icon">🔍</div><div class="step-label">Contours</div><div class="step-desc">Find shapes</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="icon">📐</div><div class="step-label">Polygon</div><div class="step-desc">Footprint pts</div></div>
+    </div>
+    <div class="grid-2" style="margin-top: 18px;">
+      <div class="card">
+        <h3>Live API Result</h3>
+        <div class="api-box">{
+  "building_detected": true,
+  "confidence": 98.5,
+  "estimated_height": 62.0,
+  "estimated_floors": 18,
+  "building_type": "Mixed Use",
+  "footprint": [[0.20, 0.25],
+                [0.20, 0.75],
+                [0.80, 0.75],
+                [0.80, 0.25]],
+  "area_ratio": 0.30,
+  "annotated_url": "/uploads/annotated_abc.jpg"
+}</div>
+      </div>
+      <div class="card">
+        <h3>How it works</h3>
+        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+          <li>✅ <b>Grayscale</b> → single channel for edge detection</li>
+          <li>✅ <b>Gaussian blur</b> → removes noise from camera artifacts</li>
+          <li>✅ <b>Canny edges</b> → finds building boundaries at 50/150 thresholds</li>
+          <li>✅ <b>Morph close</b> → bridges small gaps in edges</li>
+          <li>✅ <b>Contour filter</b> → keeps only large rectangular shapes</li>
+          <li>✅ <b>Height est.</b> → 8m base + area_ratio × 180m</li>
+          <li>✅ <b>Type classify</b> → area ratio buckets (low/mid/high/mixed/commercial)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: ULPIN REGISTRY ==================== -->
+<div class="slide" data-notes="India's ULPIN system assigns a unique land parcel ID. We automate this: type the state, city, parcel number, building, floor, unit — and we generate the full code like IND-TG-HYD-01928-B01-F04-U01. We also validate any ULPIN by parsing it and confirming all parts are valid.">
+  <div class="center-col">
+    <span class="tag">Feature #3 — ULPIN Registry</span>
+    <h2>Generate & validate <span class="yellow">ULPIN</span> in one click</h2>
+    <div class="grid-2" style="margin-top: 16px;">
+      <div class="card">
+        <h3>ULPIN Structure</h3>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; margin-top: 16px; text-align: center; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid rgba(0,255,255,0.2);">
+          <span class="red">IND</span>-<span class="yellow">TG</span>-<span class="green">HYD</span>-<span class="pink">01928</span>-<span class="neon">B01</span>-<span style="color: var(--accent-pink);">F04</span>-<span style="color: var(--accent-green);">U01</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; margin-top: 12px; font-size: 0.68rem; text-align: center;">
+          <div style="padding: 6px; border-radius: 6px; background: rgba(251,113,133,0.1); border: 1px solid rgba(251,113,133,0.3);">
+            <div style="font-weight: 700; color: var(--accent-red);">IND</div>
+            <div style="color: var(--text-dim);">Country</div>
+          </div>
+          <div style="padding: 6px; border-radius: 6px; background: rgba(250,204,21,0.1); border: 1px solid rgba(250,204,21,0.3);">
+            <div style="font-weight: 700; color: var(--accent-yellow);">TG</div>
+            <div style="color: var(--text-dim);">State</div>
+          </div>
+          <div style="padding: 6px; border-radius: 6px; background: rgba(110,231,183,0.1); border: 1px solid rgba(110,231,183,0.3);">
+            <div style="font-weight: 700; color: var(--accent-green);">HYD</div>
+            <div style="color: var(--text-dim);">City</div>
+          </div>
+          <div style="padding: 6px; border-radius: 6px; background: rgba(240,171,252,0.1); border: 1px solid rgba(240,171,252,0.3);">
+            <div style="font-weight: 700; color: var(--accent-pink);">01928</div>
+            <div style="color: var(--text-dim);">Parcel</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; margin-top: 4px; font-size: 0.68rem; text-align: center;">
+          <div style="padding: 6px; border-radius: 6px; background: rgba(0,255,255,0.1); border: 1px solid rgba(0,255,255,0.3);">
+            <div style="font-weight: 700; color: var(--cyber);">B01</div>
+            <div style="color: var(--text-dim);">Building</div>
+          </div>
+          <div style="padding: 6px; border-radius: 6px; background: rgba(240,171,252,0.1); border: 1px solid rgba(240,171,252,0.3);">
+            <div style="font-weight: 700; color: var(--accent-pink);">F04</div>
+            <div style="color: var(--text-dim);">Floor</div>
+          </div>
+          <div style="padding: 6px; border-radius: 6px; background: rgba(110,231,183,0.1); border: 1px solid rgba(110,231,183,0.3);">
+            <div style="font-weight: 700; color: var(--accent-green);">U01</div>
+            <div style="color: var(--text-dim);">Unit</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Live Validation Response</h3>
+        <div class="api-box">{
+  "valid": true,
+  "code": "IND-TG-HYD-01928-B01-F04-U01",
+  "parts": {
+    "country": "IND",
+    "state":   "TG",
+    "city":    "HYD",
+    "parcel":  "01928",
+    "building":"B01",
+    "floor":   "F04",
+    "unit":    "U01"
+  }
+}</div>
+        <div style="margin-top: 10px; font-size: 0.75rem; color: var(--text-dim);">
+          ✓ Regex-validated format <span class="pill pill-cyber" style="margin-left: 4px;">COUNTRY-STATE-CITY-PARCEL-Bxx-Fxx-Uxx</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: VALIDATION ==================== -->
+<div class="slide" data-notes="Our validation engine runs 6 independent rule checks and produces a score from 0 to 100. It checks height per floor consistency (2.8 to 4.2 meters), AI confidence bands, parcel area presence, building type classification, floor count sanity, and height range. The result is a pass/fail/review status with specific warnings.">
+  <div class="center-col">
+    <span class="tag">Feature #4 — Rule Validation</span>
+    <h2>6-rule <span class="green">validation engine</span> · 0–100 score</h2>
+    <div class="grid-2" style="margin-top: 16px;">
+      <div class="card">
+        <h3>BLD-2043 (Commercial Tower)</h3>
+        <div class="api-box">{
+  "id": 2,
+  "building_id": 3,
+  "building_code": "BLD-2043",
+  "score": 100.0,
+  "status": "valid",
+  "warnings": [],
+  "checks": {
+    "height_per_floor": 3.50,
+    "height_floor_consistency": "pass",
+    "ai_confidence": 96.8,
+    "ai_confidence_check": "pass",
+    "parcel_area": "pass",
+    "building_type": "pass",
+    "floor_count": "pass",
+    "height_range": "pass"
+  }
+}</div>
+      </div>
+      <div class="card">
+        <h3>6 Rule Checks</h3>
+        <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: var(--accent-green); font-size: 1.1rem;">✓</span>
+            <div><b>Height/Floor Ratio</b><br><span style="font-size: 0.72rem; color: var(--text-dim);">Must be 2.8–4.2 m per floor</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: var(--accent-green); font-size: 1.1rem;">✓</span>
+            <div><b>AI Confidence</b><br><span style="font-size: 0.72rem; color: var(--text-dim);">≥90% pass, 75–90% review, <75% fail</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: var(--accent-green); font-size: 1.1rem;">✓</span>
+            <div><b>Parcel Area</b><br><span style="font-size: 0.72rem; color: var(--text-dim);">Must have a recorded area</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: var(--accent-green); font-size: 1.1rem;">✓</span>
+            <div><b>Building Type</b><br><span style="font-size: 0.72rem; color: var(--text-dim);">Must be classified by AI</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: var(--accent-green); font-size: 1.1rem;">✓</span>
+            <div><b>Floor Count</b><br><span style="font-size: 0.72rem; color: var(--text-dim);">1–60 realistic range</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: var(--accent-green); font-size: 1.1rem;">✓</span>
+            <div><b>Height Range</b><br><span style="font-size: 0.72rem; color: var(--text-dim);">3–300 m realistic range</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: 3D CITY ==================== -->
+<div class="slide" data-notes="The 3D city is rendered with React Three Fiber. Each building is procedurally generated from its real height, floor count, and footprint polygon. Buildings are color-coded by type, have clickable labels, floor-slab explode animation, underground pipe visualization, and a Parcel-Building-Floor-Unit drill-down panel.">
+  <div class="center-col">
+    <span class="tag">Feature #5 — Dynamic 3D City</span>
+    <h2>Procedural <span class="pink">3D city twin</span> with drill-down</h2>
+    <div class="grid-3" style="margin-top: 16px;">
+      <div class="card">
+        <div class="card-icon">🏗️</div>
+        <h3>Dynamic Building Generation</h3>
+        <ul style="list-style: none; padding: 0; font-size: 0.78rem; display: flex; flex-direction: column; gap: 4px;">
+          <li>• <b>Height</b> → extrusion height from DB</li>
+          <li>• <b>Floors</b> → floor-slab edge lines</li>
+          <li>• <b>Footprint polygon</b> → ExtrudeGeometry from real points</li>
+          <li>• <b>Type color</b> → cyan/green/pink/violet per building class</li>
+          <li>• <b>Hover/select</b> → emissive glow + label tooltip</li>
+          <li>• <b>Rooftop beacon</b> → pulsing octahedron marker</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon">📐</div>
+        <h3>Interactive Controls</h3>
+        <ul style="list-style: none; padding: 0; font-size: 0.78rem; display: flex; flex-direction: column; gap: 4px;">
+          <li>• <b>Orbit</b> → drag to rotate around the city</li>
+          <li>• <b>Zoom</b> → scroll to fly in/out</li>
+          <li>• <b>Explode slider</b> → separate floor slabs to see interiors</li>
+          <li>• <b>Underground toggle</b> → show/hide pipes</li>
+          <li>• <b>Text filter</b> → search buildings by code or type</li>
+          <li>• <b>Building list</b> → sidebar with all towers</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>Drill-Down Panel</h3>
+        <ul style="list-style: none; padding: 0; font-size: 0.78rem; display: flex; flex-direction: column; gap: 4px;">
+          <li>• Click any building → <b>Parcel</b> info</li>
+          <li>• See building code, height, type, AI confidence</li>
+          <li>• Expand each <b>Floor</b> → see units</li>
+          <li>• Each unit shows: number, area, type, owner status</li>
+          <li>• Full <b>Parcel → Building → Floor → Unit</b> tree</li>
+          <li>• Same hierarchy available via <b>REST API</b></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid-4" style="margin-top: 12px;">
+      <div class="stat-box"><div class="num" style="font-size: 1.6rem;">React Three Fiber</div><div class="label">3D Engine</div></div>
+      <div class="stat-box"><div class="num" style="font-size: 1.6rem;">OrbitControls</div><div class="label">Camera</div></div>
+      <div class="stat-box"><div class="num" style="font-size: 1.6rem;">Drei</div><div class="label">Helpers</div></div>
+      <div class="stat-box"><div class="num" style="font-size: 1.6rem;">ExtrudeGeo</div><div class="label">Footprints</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9: UNDERGROUND ==================== -->
+<div class="slide" data-notes="We don't stop at the surface. Our underground infrastructure view renders water pipelines, sewer lines, electric cables, metro tunnels, and fiber optic cables — all as colored cylinders below the city at their real depths. Our conflict checker takes a proposed foundation depth and tolerance, and flags any underground asset that falls within that range — with high or medium severity.">
+  <div class="center-col">
+    <span class="tag">Feature #6 — Underground Infrastructure</span>
+    <h2>Below the surface — <span class="yellow">conflict detection</span></h2>
+    <div class="grid-2" style="margin-top: 16px;">
+      <div class="card">
+        <h3>5 Asset Types Rendered in 3D</h3>
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 30px; height: 8px; border-radius: 4px; background: #38bdf8;"></div>
+            <span style="font-size: 0.78rem;"><b>Water Pipeline</b> · 8.4m depth · Municipal Authority</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 30px; height: 8px; border-radius: 4px; background: #facc15;"></div>
+            <span style="font-size: 0.78rem;"><b>Electric Cable</b> · 5.0m depth · Power Corporation</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 30px; height: 8px; border-radius: 4px; background: #a3a380;"></div>
+            <span style="font-size: 0.78rem;"><b>Sewer</b> · 10.2m depth · Municipal Authority</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 30px; height: 8px; border-radius: 4px; background: #f472b6;"></div>
+            <span style="font-size: 0.78rem;"><b>Metro Tunnel</b> · 25.0m depth · Metro Rail</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 30px; height: 8px; border-radius: 4px; background: #34d399;"></div>
+            <span style="font-size: 0.78rem;"><b>Fiber Cable</b> · 3.5m depth · Telecom Provider</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Conflict Check at 8m Foundation</h3>
+        <div class="api-box">{
+  "foundation_depth": 8.0,
+  "tolerance": 3.0,
+  "conflict_count": 3,
+  "conflicts": [
+    {"infrastructure_id": "INF-0293",
+     "type": "Water Pipeline",
+     "depth": 8.4,
+     "depth_gap": 0.4,
+     "severity": "high"},
+    {"infrastructure_id": "INF-0294",
+     "type": "Electric Cable",
+     "depth": 5.0,
+     "depth_gap": 3.0,
+     "severity": "medium"},
+    {"infrastructure_id": "INF-0295",
+     "type": "Sewer",
+     "depth": 10.2,
+     "depth_gap": 2.2,
+     "severity": "medium"}
+  ]
+}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: TECH ARCHITECTURE ==================== -->
+<div class="slide" data-notes="The architecture is clean: FastAPI backend with SQLAlchemy ORM, auto-seeding SQLite database, OpenCV for computer vision, and Pydantic for validation. Frontend is Vite + React + TypeScript + Tailwind + React Three Fiber. Full REST API with 14 endpoints. CORS configured. Zero-config SQLite with Postgres-ready switch.">
+  <div class="center-col">
+    <span class="tag">Architecture</span>
+    <h2>Clean <span class="neon">full-stack</span> · zero-config deploy</h2>
+    <div class="arch" style="margin-top: 18px;">
+      <div class="arch-row">
+        <div class="arch-box" style="border-color: var(--cyber);">🛰️ Drone/Satellite Image</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" style="border-color: var(--accent-green);">🤖 OpenCV Pipeline</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" style="border-color: var(--accent-pink);">📊 FastAPI Backend</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" style="border-color: var(--accent-yellow);">💾 SQLite / Postgres</div>
+      </div>
+      <div class="arch-label">Data flow: image → analysis → database</div>
+      <div class="arch-row" style="margin-top: 16px;">
+        <div class="arch-box" style="border-color: var(--accent-pink);">📊 FastAPI REST API</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" style="border-color: var(--cyber);">⚡ Axios Client</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" style="border-color: var(--accent-green);">🎨 React + Tailwind UI</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" style="border-color: var(--accent-yellow);">🌐 React Three Fiber 3D</div>
+      </div>
+      <div class="arch-label">UI flow: API → client → views → 3D scene</div>
+    </div>
+    <div class="grid-4" style="margin-top: 16px;">
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 1.8rem;">🐍</div>
+        <h3 style="margin-top: 4px;">FastAPI</h3>
+        <p style="font-size: 0.7rem;">14 REST endpoints<br>Auto-docs at /docs</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 1.8rem;">👁️</div>
+        <h3 style="margin-top: 4px;">OpenCV</h3>
+        <p style="font-size: 0.7rem;">Real CV pipeline<br>No mock data</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 1.8rem;">⚛️</div>
+        <h3 style="margin-top: 4px;">React + Three</h3>
+        <p style="font-size: 0.7rem;">TypeScript + Tailwind<br>3D with R3F</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 1.8rem;">💾</div>
+        <h3 style="margin-top: 4px;">SQLite → Postgres</h3>
+        <p style="font-size: 0.7rem;">Zero-config default<br>One env var to switch</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11: WHY WE WIN ==================== -->
+<div class="slide" data-notes="Why LANDVERSE 3D wins: 1) First open-source 3D ULPIN tool in India. 2) Real AI, not mock — actual OpenCV detection. 3) Full-stack in one repo — 15 minutes from clone to running. 4) Underground awareness — no other tool shows pipes below. 5) Vertical property mapping — Parcel-Building-Floor-Unit hierarchy. 6) Government alignment with India's ULPIN mandate.">
+  <div class="center-col">
+    <span class="tag">Why We Win</span>
+    <h2><span class="winner-badge">🏆 Why LANDVERSE 3D wins</span></h2>
+    <table class="compare" style="margin-top: 16px;">
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Traditional GIS</th>
+          <th>Property Portals</th>
+          <th>Govt ULPIN Portal</th>
+          <th class="us">LANDVERSE 3D ✦</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>3D City Visualization</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="yes us">✓ Interactive Three.js</td>
+        </tr>
+        <tr>
+          <td>AI Building Detection</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="yes us">✓ Real OpenCV pipeline</td>
+        </tr>
+        <tr>
+          <td>ULPIN Generation</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="yes">✓</td>
+          <td class="yes us">✓ + Validate + Visualize</td>
+        </tr>
+        <tr>
+          <td>Floor/Unit Drill-Down</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="yes us">✓ Parcel→Bldg→Floor→Unit</td>
+        </tr>
+        <tr>
+          <td>Underground Infrastructure</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="yes us">✓ + Conflict Detection</td>
+        </tr>
+        <tr>
+          <td>Rule Validation Engine</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="yes us">✓ 6-rule, 0–100 score</td>
+        </tr>
+        <tr>
+          <td>Open Source</td>
+          <td class="no">Paid</td>
+          <td class="no">Proprietary</td>
+          <td class="no">Govt-only</td>
+          <td class="yes us">✓ 100% free</td>
+        </tr>
+        <tr>
+          <td>Zero-Config Setup</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="no">—</td>
+          <td class="yes us">✓ 15 min clone → run</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="grid-3" style="margin-top: 16px;">
+      <div class="card" style="border-color: rgba(110,231,183,0.4); text-align: center;">
+        <div style="font-size: 2rem;">🇮🇳</div>
+        <h3 class="green">India-First</h3>
+        <p style="font-size: 0.72rem;">Built for ULPIN mandate · Hindi-ready · State/city structure</p>
+      </div>
+      <div class="card" style="border-color: rgba(240,171,252,0.4); text-align: center;">
+        <div style="font-size: 2rem;">🤖</div>
+        <h3 class="pink">Real AI</h3>
+        <p style="font-size: 0.72rem;">Not a mockup · Actual OpenCV · Footprint polygon extraction</p>
+      </div>
+      <div class="card" style="border-color: rgba(0,255,255,0.4); text-align: center;">
+        <div style="font-size: 2rem;">🌐</div>
+        <h3 class="neon">Full-Stack</h3>
+        <p style="font-size: 0.72rem;">Backend + Frontend + 3D + DB · One repo · Deploy anywhere</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12: DEMO SCRIPT ==================== -->
+<div class="slide" data-notes="Live demo walkthrough: 1) Show the landing page and 6 features. 2) Open dashboard — show real-time stats. 3) Open 3D Map — orbit the city, click a building, show the drill-down. 4) Explode slider — separate the floor slabs. 5) Toggle underground — show the pipes. 6) AI Analysis — upload an image, show the result. 7) ULPIN — generate one, validate it. 8) Validation — run on BLD-2043. 9) Infrastructure — run conflict check at 8m. 10) Show API docs at /docs.">
+  <div class="center-col">
+    <span class="tag">Live Demo</span>
+    <h2><span class="neon">10-minute demo</span> script</h2>
+    <div class="grid-2" style="margin-top: 16px; gap: 12px;">
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,255,255,0.15); font-size: 0.8rem; font-weight: 800; color: var(--cyber);">1</span>
+          <h3>Landing Page</h3>
+        </div>
+        <p>Show the 6 feature cards, tagline, tech stack badges. "This is a complete 3D property intelligence platform."</p>
+      </div>
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,255,255,0.15); font-size: 0.8rem; font-weight: 800; color: var(--cyber);">2</span>
+          <h3>Dashboard</h3>
+        </div>
+        <p>"Live stats from the database — 5 parcels, 8 buildings, 92% AI confidence. Bar chart by type, pie chart for validation."</p>
+      </div>
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,255,255,0.15); font-size: 0.8rem; font-weight: 800; color: var(--cyber);">3</span>
+          <h3>3D Map (hero moment)</h3>
+        </div>
+        <p>"Click any tower — Parcel info, Building details, expand each floor to see individual units. Full hierarchy."</p>
+      </div>
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,255,255,0.15); font-size: 0.8rem; font-weight: 800; color: var(--cyber);">4</span>
+          <h3>Explode + Underground</h3>
+        </div>
+        <p>"Drag the explode slider — floor slabs separate. Toggle underground — water, electric, sewer pipes appear below."</p>
+      </div>
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,255,255,0.15); font-size: 0.8rem; font-weight: 800; color: var(--cyber);">5</span>
+          <h3>AI Analysis (wow moment)</h3>
+        </div>
+        <p>"Upload any drone photo — real OpenCV detects the building footprint, height, floors, type. Annotated overlay image."</p>
+      </div>
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,255,255,0.15); font-size: 0.8rem; font-weight: 800; color: var(--cyber);">6</span>
+          <h3>ULPIN + Validation + Conflict</h3>
+        </div>
+        <p>"Generate ULPIN in one click. Validate any code. Run 6-rule validation. Check underground conflicts at a foundation depth."</p>
+      </div>
+    </div>
+    <div style="margin-top: 16px; padding: 12px 20px; border-radius: 12px; background: rgba(250,204,21,0.08); border: 1px solid rgba(250,204,21,0.3); font-size: 0.82rem; color: var(--accent-yellow); text-align: center;">
+      💡 <b>Pro tip:</b> End with the API docs at <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">localhost:8000/docs</code> — "Every feature is also a documented API endpoint. Developers can build on top of this."
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 13: CLOSING ==================== -->
+<div class="slide" data-notes="LANDVERSE 3D is not just a demo — it's a complete platform. India needs this for its ULPIN mandate. It's open source, zero-config, real AI, full 3D, and ready to deploy. Thank you for your time.">
+  <div class="big-title">
+    <div class="logo-big" style="width: 100px; height: 100px; font-size: 44px;">🌐</div>
+    <h1 style="margin-top: 16px;">LANDVERSE <span class="neon">3D</span></h1>
+    <p style="font-size: 1.15rem; color: var(--text); margin-top: 10px; font-weight: 600;">India's first open-source 3D ULPIN platform</p>
+    <div class="grid-4" style="margin-top: 28px; max-width: 800px;">
+      <div class="stat-box"><div class="num" style="font-size: 1.5rem;">8</div><div class="label">Buildings</div></div>
+      <div class="stat-box"><div class="num" style="font-size: 1.5rem; color: var(--accent-green);">100%</div><div class="label">Validated</div></div>
+      <div class="stat-box"><div class="num" style="font-size: 1.5rem; color: var(--accent-pink);">14</div><div class="label">API Endpoints</div></div>
+      <div class="stat-box"><div class="num" style="font-size: 1.5rem; color: var(--accent-yellow);">0</div><div class="label">Cost to run</div></div>
+    </div>
+    <div style="margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <span class="pill pill-cyber" style="font-size: 0.8rem; padding: 6px 16px;">FastAPI</span>
+      <span class="pill pill-pink" style="font-size: 0.8rem; padding: 6px 16px;">React Three Fiber</span>
+      <span class="pill pill-green" style="font-size: 0.8rem; padding: 6px 16px;">OpenCV</span>
+      <span class="pill pill-yellow" style="font-size: 0.8rem; padding: 6px 16px;">SQLAlchemy</span>
+    </div>
+    <p style="margin-top: 32px; font-size: 1.05rem; color: var(--text);">
+      Built with ❤️ for India's ULPIN vision
+    </p>
+    <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 8px;">
+      github.com/Akshithsan11/landverse-3D
+    </p>
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<!-- Navigation -->
+<div class="progress" id="progressBar"></div>
+<div class="nav">
+  <button id="prevBtn" onclick="go(-1)">◀</button>
+  <span class="counter" id="counter">1 / 13</span>
+  <button id="nextBtn" onclick="go(1)">▶</button>
+</div>
+<button class="notes-toggle" id="notesBtn" onclick="toggleNotes()">📋 Notes</button>
+<div class="notes-panel" id="notesPanel"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
+
+  function show(i) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(total - 1, i));
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+    document.getElementById('progressBar').style.width = `${((cur + 1) / total) * 100}%`;
+    // Update notes
+    document.getElementById('notesPanel').innerHTML = slides[cur].dataset.notes || '<i>No notes for this slide.</i>';
+  }
+
+  function go(d) { show(cur + d); }
+  function toggleNotes() {
+    document.getElementById('notesPanel').classList.toggle('show');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+    if (e.key === 'Home') { e.preventDefault(); show(0); }
+    if (e.key === 'End') { e.preventDefault(); show(total - 1); }
+    if (e.key === 'n' || e.key === 'N') toggleNotes();
+  });
+
+  show(0);
+</script>
+</body>
+</html>
