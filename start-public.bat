@@ -24,6 +24,6 @@ if errorlevel 1 (
 echo API is healthy.
 
 echo [3/3] Opening public tunnel (keep this window open!)...
-echo Your hackathon link will appear below as https://....ngrok-free.dev
-ngrok.exe http 5173
+echo Your permanent hackathon link: https://boil-earshot-wilt.ngrok-free.dev
+ngrok.exe http --url=https://boil-earshot-wilt.ngrok-free.dev 5173
 pause
