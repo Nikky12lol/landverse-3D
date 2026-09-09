@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+venv/
+landverse3d.db
+backend/landverse3d.db
+uploads/*
+!uploads/.gitkeep
+node_modules/
+frontend/dist/
+.env
