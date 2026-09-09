@@ -1,6 +1,8 @@
 @echo off
 REM LANDVERSE 3D — one-click public launch (Windows)
-REM Starts Docker stack, then opens a free Cloudflare tunnel and prints the public URL.
+REM Starts the Docker stack, waits for the API, then opens a public ngrok
+REM tunnel. Your hackathon link appears below. KEEP THIS WINDOW OPEN.
+REM (First run: ngrok needs your authtoken once via: ngrok.exe config add-authtoken TOKEN)
 cd /d "%~dp0"
 set PATH=C:\Program Files\Docker\Docker\resources\bin;%PATH%
 
@@ -22,6 +24,6 @@ if errorlevel 1 (
 echo API is healthy.
 
 echo [3/3] Opening public tunnel (keep this window open!)...
-echo Your hackathon link will appear below as https://....trycloudflare.com
-"C:\Users\AKSHITH\AppData\Local\Temp\opencode\cloudflared.exe" tunnel --url http://localhost:5173
+echo Your hackathon link will appear below as https://....ngrok-free.dev
+ngrok.exe http 5173
 pause
