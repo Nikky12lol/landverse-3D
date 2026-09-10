@@ -6,6 +6,23 @@ Full-stack app: **FastAPI backend** (SQLite out-of-the-box, Postgres-ready) + **
 
 **https://boil-earshot-wilt.ngrok-free.dev** — the Docker stack below, served publicly via tunnel. (Needs this PC + Docker running; if offline, launch it yourself with `docker compose up --build` + `start-public.bat`.)
 
+## Deploy to Railway (persistent cloud hosting)
+
+Railway runs each part as its own service (it doesn't read `docker-compose.yml`):
+
+1. **railway.app → New Project → Deploy from Repo** → select `Akshithsan11/SIH_working_project_26011`
+2. **Add Postgres**: New → Database → PostgreSQL
+3. **API service**: New → GitHub Repo (same repo) → Settings → **Root Directory = `backend/`** (builder auto-detects `Dockerfile` via `railway.toml`). Variables:
+   - `DATABASE_URL=${{Postgres.DATABASE_URL}}` (click "Add Reference" → Postgres → DATABASE_URL)
+   - `UPLOAD_DIRECTORY=/app/uploads`
+   - `SECRET_KEY=<any-random-string>`
+   - Then Settings → Networking → **Generate Domain** → copy `https://<api>.up.railway.app`
+4. **Web service**: New → GitHub Repo (same repo) → Root Directory = `frontend/`. Variables:
+   - `VITE_API_URL=https://<api>.up.railway.app` (paste the domain from step 3 — Vite bakes this in at build time, so deploy API first)
+   - Generate Domain → your permanent site URL
+5. **Persistent uploads** (optional): API service → Volumes → New Volume, mount path `/app/uploads`
+6. Open the web URL → Dashboard should show 5 parcels / 8 buildings (auto-seeded into Postgres on first boot)
+
 ## Run it (Windows)
 
 ```bat

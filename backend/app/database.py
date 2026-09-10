@@ -8,6 +8,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./landverse3d.db")
+if DATABASE_URL.startswith("postgres://"):  # Railway/Heroku-style scheme
+    DATABASE_URL = "postgresql://" + DATABASE_URL[len("postgres://"):]
 
 connect_args = {}
 if DATABASE_URL.startswith("sqlite"):
