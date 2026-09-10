@@ -68,3 +68,21 @@ app.include_router(analysis.router)
 app.include_router(validation.router)
 app.include_router(infrastructure.router)
 app.include_router(stats.router)
+
+
+# ---- Single-container mode (e.g. Hugging Face Spaces): serve bundled UI ----
+# Only active when frontend/dist exists next to the backend (copied in by the
+# release Dockerfile). All API routers above take precedence; the catch-all
+# below serves index.html so one public URL hosts UI + API with zero CORS.
+DIST_DIR = os.path.join(BASE_DIR, "frontend", "dist")
+if os.path.isdir(DIST_DIR):
+    from fastapi.responses import FileResponse
+
+    app.mount("/assets", StaticFiles(directory=os.path.join(DIST_DIR, "assets")), name="spa-assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def spa_fallback(full_path: str):
+        safe = os.path.normpath(os.path.join(DIST_DIR, full_path))
+        if full_path and safe.startswith(DIST_DIR) and os.path.isfile(safe):
+            return FileResponse(safe)
+        return FileResponse(os.path.join(DIST_DIR, "index.html"))
